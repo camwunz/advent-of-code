@@ -6,7 +6,7 @@ from itertools import *
 from functools import *
 from aocd import submit, data
 
-FILENAME = "input.txt"
+FILENAME = "1/input.txt"
 
 def get_input_from_file():
     with open(FILENAME) as f:

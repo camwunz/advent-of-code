@@ -6,15 +6,36 @@ from itertools import *
 from functools import *
 from aocd import submit, data
 
-FILENAME = "input.txt"
+FILENAME = "7/input.txt"
 
 def get_input_from_file():
-    with open(FILENAME) as f:
-        lines = f.read().splitlines()
+    try:
+        with open(FILENAME) as f:
+            lines = f.read().splitlines()
+    except FileNotFoundError:
+        with open("input.txt") as f:
+            lines = f.read().splitlines()
     return lines
 
 def main(lines):
-    
+    res = 0
+    for line in lines:
+        val = int(line.split(":")[0])
+        nums = [int(x) for x in line.split(":")[1].split()]
+        states = set([nums[0]])
+        for num in nums[1:]:
+            new_states = set()
+            for state in states:
+                if state + num <= val:
+                    new_states.add(state + num)
+                if state * num <= val:
+                    new_states.add(state * num)
+                if int(str(state) + str(num)) <= val:
+                    new_states.add(int(str(state) + str(num)))
+            states = new_states.copy()
+        if val in states:
+            res += val
+    return res
 
 if __name__ == "__main__":
     # test input
@@ -24,6 +45,7 @@ if __name__ == "__main__":
     if res is not None:
         print(res)
     print()
+    # input("Waiting for input before running real...: ")
     # real input
     print("REAL INPUT")
     res = main(data.splitlines())
