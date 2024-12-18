@@ -14,6 +14,38 @@ def get_input_from_file():
         lines = f.read().splitlines()
     return lines
 
+def get_sides(sides):
+    sides_am = 0
+    for dx, dy in sides:
+        groupings = sides[(dx, dy)]
+        seen = set()
+        check_move = None
+        if dy == 0:
+            check_move = [(0, 1), (0, -1)]
+        else:
+            check_move = [(1, 0), (-1, 0)]
+        for start_group in groupings:
+            if start_group in seen:
+                continue
+            local_seen = set([start_group])
+            seen.add(start_group)
+            while True:
+                to_add = set()
+                for match_group in groupings:
+                    mgx, mgy = match_group
+                    if match_group in seen:
+                        continue
+                    for pcx, pcy in local_seen:
+                        if (mgx - pcx, mgy - pcy) in check_move:
+                            to_add.add((mgx, mgy))
+                            seen.add((mgx, mgy))
+                if not to_add:
+                    break
+                local_seen |= to_add
+            sides_am += 1
+            print("side ", list(sorted(local_seen)))
+    return sides_am
+
 def main(lines):
     res = 0
 
@@ -22,6 +54,7 @@ def main(lines):
         for ci, col in enumerate(row):
             if (ri, ci) not in seen:
                 region = set([(ri, ci)])
+                sides = defaultdict(list)
                 t = lines[ri][ci]
                 permi = 0
                 stack = [(ri, ci)]
@@ -34,15 +67,18 @@ def main(lines):
                         nx, ny = cx+dx, cy+dy
                         if not (0 <= nx < len(lines) and 0 <= ny < len(lines[0])):
                             permi += 1
+                            sides[(dx, dy)].append((nx, ny))
                         else:
                             if lines[nx][ny] == t:
                                 stack.append((nx, ny))
                                 region.add((nx, ny))
                             else:
-                                permi += 1
-                res += (len(region) * permi)
-                print(t, len(region), permi)
+                                sides[(dx, dy)].append((nx, ny))
+                
 
+                sides_am = get_sides(sides)
+                res += sides_am * len(region)
+                
     return res
 
 if __name__ == "__main__":

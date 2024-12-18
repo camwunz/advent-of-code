@@ -16,6 +16,7 @@ def get_input_from_file():
 def main(lines):
     res = 0
 
+    
 
     return res
 

@@ -7,6 +7,7 @@ from functools import *
 from aocd import submit, data
 
 FILENAME = "11/input.txt"
+ns = [(0, 1), (1, 0), (-1, 0), (0, -1)]
 
 def get_input_from_file():
     with open(FILENAME) as f:
@@ -15,18 +16,32 @@ def get_input_from_file():
 
 def main(lines):
     res = 0
+    stones = [int(x) for x in lines[0].split()]
+    stones = Counter(stones)
+    for _ in range(75):
+        new_stones = defaultdict(int)
+        for stone, am in stones.items():
+            if stone == 0:
+                new_stones[1] += am
+            elif len(str(stone)) % 2 == 0:
+                a, b = str(stone)[:len(str(stone))//2], str(stone)[len(str(stone))//2:]
+                new_stones[int(a)] += am
+                new_stones[int(b)] += am
+            else:
+                new_stones[(2024 * stone)] += am
+        stones = new_stones.copy()
+        print(_+1, sum(stones.values()))
 
-
-    return res
+    return len(stones)
 
 if __name__ == "__main__":
     # test input
     print("TEST INPUT:")
     lines = get_input_from_file()
-    res = main(lines)
-    if res is not None:
-        print(res)
-    print()
+    # res = main(lines)
+    # if res is not None:
+    #     print(res)
+    # print()
     # real input
     input("waiting for input...")
     print("REAL INPUT")

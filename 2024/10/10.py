@@ -13,8 +13,28 @@ def get_input_from_file():
         lines = f.read().splitlines()
     return lines
 
+ns = [(0, 1), (0, -1), (-1, 0), (1, 0)]
 def main(lines):
     res = 0
+    zeroes = list()
+    for ri, row in enumerate(lines):
+        for ci, col in enumerate(row):
+            if col == "0":
+                zeroes.append((ri, ci))
+    
+    for zx, zy in zeroes:
+        state = [{(zx, zy): 1}]
+        for val in range(9):
+            prev = state[-1]
+            new_states = defaultdict(int)
+            for (cx, cy) in prev:
+                for dx, dy in ns:
+                    nx, ny = cx+dx, cy+dy
+                    if 0 <= nx < len(lines) and 0 <= ny < len(lines[0]) and lines[nx][ny] == str(val+1):
+                        new_states[(nx, ny)] += prev[(cx, cy)]
+            state.append(new_states)
+        print(sum(state[-1].values()))
+        res += sum(state[-1].values())
 
 
     return res
