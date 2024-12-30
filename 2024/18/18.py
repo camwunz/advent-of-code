@@ -13,11 +13,46 @@ def get_input_from_file():
         lines = f.read().splitlines()
     return lines
 
+SIZE = 6
+# SIZE = 70
+
+LIMIT = 12
+# LIMIT = 1024
+
+ns = [(1, 0), (-1, 0), (0, -1), (0, 1)]
+
 def main(lines):
     res = 0
+    LIMIT = 12
 
-    
+    def mini(l):
+        blocked = set()
+        for _ in range(LIMIT):
+            v = tuple([int(x) for x in lines[_].split(',')])
+            blocked.add(v)
+        
+        states = deque([(0, 0, 0)])
+        seen = set([(0, 0)])
+        while states:
+            r, c, cost = states.popleft()
+            if (r, c) == (SIZE, SIZE):
+                return True
+            for dr, dc in ns:
+                nr, nc = r+dr, c+dc
+                if 0 <= nr <= SIZE and 0 <= nc <= SIZE and (nr, nc) not in blocked:
+                    if (nr, nc) not in seen:
+                        states.append((nr, nc, cost+1))
+                        seen.add((nr, nc))
+            # print(states)
+            # input()
+        return False
 
+    while True:
+        res = mini(LIMIT)
+        if not res:
+            return lines[LIMIT]
+        LIMIT += 1
+        
     return res
 
 if __name__ == "__main__":

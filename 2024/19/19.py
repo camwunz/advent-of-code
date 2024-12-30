@@ -8,14 +8,40 @@ from aocd import submit, data
 
 FILENAME = "19/input.txt"
 
+ns = [(1, 0), (-1, 0), (0, -1), (0, 1)]
+
 def get_input_from_file():
     with open(FILENAME) as f:
         lines = f.read().splitlines()
     return lines
 
+
+
 def main(lines):
     res = 0
+    towels = set(lines[0].split(', '))
+    longest = max([len(x) for x in towels])
+    cache = {}
 
+    def can_make(towel):
+        if towel == "":
+            cache[towel] = 1
+            return 1
+        if towel in cache:
+            return cache[towel]
+        valid = 0
+        i = 1
+        while i <= min(longest+1, len(towel)):
+            part = towel[:i]
+            if part in towels:
+                valid += can_make(towel[i:])
+            i += 1
+        cache[towel] = valid
+        return valid
+        
+    goals = lines[2:]
+    for goal in goals:
+        res += can_make(goal)
 
     return res
 

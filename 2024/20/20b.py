@@ -47,27 +47,49 @@ def main(lines):
     res = 0
     lines = [list(x) for x in lines]
     base_costs = dists(lines)
-    # print(base_costs)
     teleports = set()
     dots = set()
     for ri in range(len(lines)):
         for ci in range(len(lines[0])):
             if lines[ri][ci] != "#":
                 dots.add((ri, ci))
-    print(len(dots))
+    
     for a, b in dots:
-        for c, d in dots:
-            if abs(c-a) + abs(d-b) <= 20:
-                teleports.add(((a,b), (c,d)))
+        for c in range(a-22, a+22):
+            for d in range(b-22, b+22):
+                if (c, d) in dots:
+                    if a != c and b != d:
+                        dx = abs(c-a)
+                        x_direction = int((c-a)/dx)
+                        dy = abs(d-b)
+                        y_direction = int((d-b)/dy)
+                        if dx:
+                            can_go_startx = lines[a+x_direction][b] != "#"
+                            can_go_endx = lines[c-x_direction][d] != "#"
+                        if dy:
+                            can_go_starty = lines[a][b+y_direction] != '#'
+                            can_go_endy = lines[c][d-y_direction] != "#"
+                        # if dx and dy:
+                        #     if (can_go_startx and can_go_starty):
+                        #         continue
+                        #     if (can_go_endx and can_go_endy):
+                        #         continue
+                        # elif dx and not dy:
+                        #     if can_go_startx or can_go_endx:
+                        #         continue
+                        # elif dy and not dx:
+                        #     if can_go_starty or can_go_endy:
+                        #         continue
+                        if abs(c-a) + abs(d-b) <= 20:
+                            teleports.add(((a,b), (c,d)))
 
     print(len(teleports))
-    counts = defaultdict(int)
     for (a, b), (c, d) in teleports:
         start_cost = base_costs[(a, b)]
         end = base_costs[(c, d)]
         move_cost = abs(c-a) + abs(d-b)
-        savings = (end - start_cost - move_cost)
-        if savings >= 100:
+        if (end - start_cost - move_cost) >= 70:
+            # print(a, b, c, d)
             res += 1
     return res
 

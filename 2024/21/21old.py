@@ -95,98 +95,24 @@ def get_all(lines, grid):
             options = new_options.copy()
         output = output.union(options)
     return output
-
-def split_as(a_movement):
-    curr_pos = (2, 0)
-    i = 0
-    curr = []
-    t = ""
-    while i < len(a_movement):
-        if a_movement[i] == "A" and curr_pos == (2, 0):
-            t = t + "A"
-            curr.append(t)
-            t = ""
-        else:
-            t = t + a_movement[i]
-            c = a_movement[i]
-            if c == ">":
-                curr_pos = (curr_pos[0]+1, curr_pos[1])
-            elif c == "<":
-                curr_pos = (curr_pos[0]-1, curr_pos[1])
-            elif c == "^":
-                curr_pos = (curr_pos[0], curr_pos[1]-1)
-            elif c == "v":
-                curr_pos = (curr_pos[0], curr_pos[1]+1)
-        i += 1
-    # print(a_movement, curr)
-    # input()
-    return curr
-
+    
 def main(lines):
     res = 0
-    all_A_transforms = set(
-        ['>>^A',
-        ">>A",
-        "vA",
-        "^A",
-        ">^A",
-        ">vA",
-        "<^A",
-        "<vA",
-        "A",
-        "<A",
-        ">A",
-        "^<A",
-        "v<A",
-        "^>A",
-        "v>A",
-        "v<<A"]
-    )
-
-    # print(len(all_A_transforms))
-    small_as_key = dict()
-    for s in sorted(all_A_transforms):
-        results = get_all([s], robot_grid)
-        small_as_key[s] = results
-    
-    big_as_key = dict()
-    for s in sorted(small_as_key):
-        for k in small_as_key[s]:
-            results = get_all([k], robot_grid)
-            big_as_key[k] = results
-    
-    @cache
-    def min_length(small_a, d):
-        if d == 0:
-            return len(small_a)
-
-        possible_options = big_as_key[small_a]
-        best = float('inf')
-        for option in possible_options:
-            small_as = split_as(option)
-            total = 0
-            for a in small_as:
-                total += min_length(a, d-1)
-            best = min(best, total)
-        
-        return best
-    
-
+    all_A_transforms = set()
     for line in lines:
-        s1 = get_all([line], num_grid)
-        s1 = get_all(s1, robot_grid)
-        s1 = get_all(s1, robot_grid)
-        # print(s1)
+        
+        options = get_all([line], num_grid)
+        for _ in range(3):
+            min_len = min([len(x) for x in options])
+            options = [x for x in options if len(x) == min_len]
+            options = get_all(options, robot_grid)
+            print(_, min_len)
+        best = min(options, key=len)
+        x = len(best)
         num = int(line[:-1])
-        best = float('inf')
-        for option in s1:
-            total = 0
-            for small_a in split_as(option):
-                total += min_length(small_a, 23)
-            best = min(best, total)
-        res += best * num
-        # print(best, num)
-        # input()
+        res += num * x
+        print(num, x)
+
         
     return res
 
